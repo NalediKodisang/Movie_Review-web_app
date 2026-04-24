@@ -13,7 +13,7 @@ if (!id) {
     throw new Error("Missing movie ID");
 }
 
-const REVIEWS_API = "http://localhost:8000/api/v1/reviews";
+const REVIEWS_API = "https://movie-review-web-app-1.onrender.com/api/v1/reviews";
 
 const main = document.getElementById("section");
 const titleElement = document.getElementById("title");
