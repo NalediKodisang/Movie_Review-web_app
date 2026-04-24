@@ -5,6 +5,26 @@ const SEARCHAPI = "https://api.themoviedb.org/3/search/movie?api_key=ffd11763968
 const main = document.getElementById("section");
 const form = document.getElementById("form");
 const search = document.getElementById("query");
+ 
+// Auth check
+const token = localStorage.getItem("token");
+const username = localStorage.getItem("username");
+const navUser = document.getElementById("navUser");
+
+if (!token) {
+    navUser.innerHTML = `<a href="login.html">Login</a>`;
+} else {
+    navUser.innerHTML = `
+        <span style="color:white; padding: 10px;">👋 ${username}</span>
+        <a href="#" onclick="logout()">Logout</a>
+    `;
+}
+
+function logout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    window.location.href = "login.html";
+}
 
 returnMovies(APILINK);
 

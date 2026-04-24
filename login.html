@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topnav">
+  <a class="active" href="index.html">MOVIE SITE</a>
+</div>
+
+<div class="auth-container">
+
+  <div class="auth-box" id="loginBox">
+    <h2>Login</h2>
+    <input id="loginUsername" placeholder="Username" />
+    <input id="loginPassword" type="password" placeholder="Password" />
+    <button onclick="login()">Login</button>
+    <p>Don't have an account? <a href="#" onclick="toggleForm()">Register</a></p>
+    <p id="loginError" style="color:red"></p>
+  </div>
+
+  <div class="auth-box" id="registerBox" style="display:none">
+    <h2>Register</h2>
+    <input id="regUsername" placeholder="Username" />
+    <input id="regPassword" type="password" placeholder="Password" />
+    <button onclick="register()">Create Account</button>
+    <p>Already have an account? <a href="#" onclick="toggleForm()">Login</a></p>
+    <p id="registerError" style="color:red"></p>
+    <p id="registerSuccess" style="color:lightgreen"></p>
+  </div>
+
+</div>
+
+<script>
+  const API = "http://localhost:8000/api/v1/auth";
+
+  function toggleForm() {
+    const login = document.getElementById("loginBox");
+    const register = document.getElementById("registerBox");
+    login.style.display = login.style.display === "none" ? "block" : "none";
+    register.style.display = register.style.display === "none" ? "block" : "none";
+  }
+
+  async function login() {
+    const username = document.getElementById("loginUsername").value.trim();
+    const password = document.getElementById("loginPassword").value.trim();
+
+    const res = await fetch(`${API}/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password })
+    });
+
+    const data = await res.json();
+
+    if (data.error) {
+      document.getElementById("loginError").innerText = data.error;
+      return;
+    }
+
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("username", data.username);
+    window.location.href = "index.html";
+  }
+
+  async function register() {
+    const username = document.getElementById("regUsername").value.trim();
+    const password = document.getElementById("regPassword").value.trim();
+
+    const res = await fetch(`${API}/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password })
+    });
+
+    const data = await res.json();
+
+    if (data.error) {
+      document.getElementById("registerError").innerText = data.error;
+      return;
+    }
+
+    document.getElementById("registerSuccess").innerText = data.message;
+    setTimeout(() => toggleForm(), 1500);
+  }
+</script>
+
+</body>
+</html>
