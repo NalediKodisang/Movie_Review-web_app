@@ -1,0 +1,241 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #131720;
+    font-family: 'Poppins', sans-serif;
+    color: white;
+    margin: 0;
+}
+
+/* ================= TOP NAV ================= */
+
+.topnav {
+    overflow: hidden;
+    background-color: #0d1117;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.topnav a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.2rem;
+    padding: 10px 15px;
+}
+
+.topnav a:hover {
+    background-color: #1f2a40;
+    border-radius: 8px;
+}
+
+/* ================= SEARCH ================= */
+
+.topnav .search-container {
+    display: flex;
+}
+
+form {
+    display: flex;
+    width: 300px;
+    height: 40px;
+    border-radius: 10px;
+    background-color: white;
+    align-items: center;
+    overflow: hidden;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    background-color: transparent;
+    color: black;
+    font-size: 15px;
+    outline: white;
+}
+
+button {
+    background-color: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 10px;
+}
+
+/* ================= LAYOUT ================= */
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px;
+    padding: 20px;
+}
+
+/* ================= MOVIE CARD ================= */
+
+.card {
+    width: 220px;
+    border-radius: 16px;
+    padding: 12px;
+    text-align: center;
+    background-color: #151f30;
+    color: white;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.6);
+}
+
+/* ================= THUMBNAIL ================= */
+
+.thumbnail {
+    width: 100%;
+    height: 320px;
+    object-fit: cover;
+    border-radius: 12px;
+    transition: transform 0.3s ease;
+}
+
+.card:hover .thumbnail {
+    transform: scale(1.05);
+}
+
+/* ================= TEXT ================= */
+
+h1, h2, h3 {
+    color: white;
+    letter-spacing: 1px;
+}
+
+h3 {
+    margin-top: 10px;
+}
+
+p {
+    color: white;
+    font-size: 15px;
+}
+
+/* ================= LINKS ================= */
+
+a {
+    color: #4da3ff;
+}
+
+a:hover {
+    color: #80c1ff;
+}
+
+/* /* ================= REVIEWS ================= */
+
+.review-card {
+    background-color: white;
+    padding: 15px;
+    border-radius: 12px;
+    margin: 15px 0;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+/* ================= REVIEW FORM INPUTS ================= */
+
+.review-form input,
+.review-form textarea {
+    background-color: white;
+    color: #131720;
+    border: 2px solid #2a3a55;
+    border-radius: 10px;
+    padding: 10px 14px;
+    width: 100%;
+    max-width: 400px;
+    font-size: 15px;
+    font-family: 'Poppins', sans-serif;
+    outline: none;
+    display: block;
+    margin-bottom: 14px;
+    transition: border-color 0.2s ease;
+}
+
+.review-form input:focus,
+.review-form textarea:focus {
+    border-color: #4da3ff;
+}
+
+.review-form textarea {
+    height: 100px;
+    resize: vertical;
+}
+
+.review-form button {
+    background-color: #4da3ff;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 24px;
+    font-size: 15px;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.review-form button:hover {
+    background-color: #80c1ff;
+    opacity: 1;
+}
+
+/* ================= STAR RATING ================= */
+
+.rating {
+    color: gold;
+    font-size: 18px;
+    margin-top: 5px;
+}
+
+/* ================= MOVIE PAGE HEADER ================= */
+
+.movie-header {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* ================= BUTTON HOVER EFFECT ================= */
+
+button:hover {
+    opacity: 0.8;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 768px) {
+    .card {
+        width: 45%;
+    }
+
+    form {
+        width: 200px;
+    }
+}
+
+@media (max-width: 480px) {
+    .card {
+        width: 100%;
+    }
+
+    .topnav {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
