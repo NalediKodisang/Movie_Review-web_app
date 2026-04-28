@@ -13,15 +13,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ✅ Serve frontend files
 app.use(express.static(__dirname));
 
-// API routes
 app.use("/api/v1/reviews", reviews);
 app.use("/api/v1/auth", auth);
 
-// ✅ Catch all - serve index.html for any unknown route
-app.get("*", (req, res) => {
+app.use((req, res) => {
     res.sendFile(path.join(__dirname, "index.html"));
 });
 
