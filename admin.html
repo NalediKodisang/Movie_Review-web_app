@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topnav">
+    <a class="active" href="index.html">MOVIE SITE</a>
+    <div id="navUser"></div>
+</div>
+
+<div style="padding: 20px;">
+
+    <h1>👑 Admin Dashboard</h1>
+
+    <!-- ===================== -->
+    <!-- STATS SECTION -->
+    <!-- ===================== -->
+    <!-- Shows quick numbers at the top of the dashboard -->
+    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 30px;">
+        
+        <!-- Total reviews card -->
+        <div class="card" style="width: 200px; text-align: center;">
+            <h2 id="totalReviews">...</h2>
+            <p>Total Reviews</p>
+        </div>
+
+        <!-- Total users card -->
+        <div class="card" style="width: 200px; text-align: center;">
+            <h2 id="totalUsers">...</h2>
+            <p>Total Users</p>
+        </div>
+
+        <!-- Most reviewed movie card -->
+        <div class="card" style="width: 200px; text-align: center;">
+            <h2 id="topMovie">...</h2>
+            <p>Most Reviewed Movie ID</p>
+        </div>
+
+    </div>
+
+    <hr style="border-color: #2a3a55; margin-bottom: 30px;">
+
+    <!-- ===================== -->
+    <!-- ALL REVIEWS SECTION -->
+    <!-- ===================== -->
+    <h2>All Reviews</h2>
+    <section id="allReviews"></section>
+
+</div>
+
+<script>
+const REVIEWS_API = "https://movie-review-web-app-1.onrender.com/api/v1/reviews";
+const AUTH_API = "https://movie-review-web-app-1.onrender.com/api/v1/auth";
+
+// Read token, username and role from localStorage
+const token = localStorage.getItem("token");
+const username = localStorage.getItem("username");
+const role = localStorage.getItem("role");
+// role tells us if this person is "admin" or "user"
+
+const navUser = document.getElementById("navUser");
+
+// =====================
+// SECURITY CHECK
+// =====================
+// If not logged in OR not admin - kick them out immediately
+// We dont want regular users accessing the admin dashboard
+if (!token || role !== "admin") {
+    alert("Access denied! Admins only.");
+    window.location.href = "index.html";
+}
+
+// Set up navbar with username and logout
+navUser.innerHTML = `
+    <span style="color: gold; padding: 10px;">👑 ${username}</span>
+    <a href="#" onclick="logout()">Logout</a>
+`;
+
+// Logs out admin and redirects to login page
+function logout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    localStorage.removeItem("role");
+    window.location.href = "login.html";
+}
+
+// =====================
+// LOAD ALL REVIEWS
+// =====================
+// Fetches every single review in the database
+// Admin can see and delete all of them
+function loadAllReviews() {
+    fetch(`${REVIEWS_API}/all`, {
+        headers: {
+            // Sends the JWT token so backend knows this is an admin
+            "Authorization": `Bearer ${token}`
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log("All reviews:", data);
+
+        const section = document.getElementById("allReviews");
+
+        // =====================
+        // STATS
+        // =====================
+        // Total reviews = how many reviews are in the array
+        document.getElementById("totalReviews").innerText = data.length;
+
+        // Most reviewed movie
+        // We count how many reviews each movie_id has
+        // Then find the one with the most
+        const movieCounts = {};
+        data.forEach(review => {
+            // If this movie_id hasnt been seen before start at 0
+            // Then add 1 each time we see it
+            movieCounts[review.movie_id] = (movieCounts[review.movie_id] || 0) + 1;
+        });
+
+        // Object.entries converts the object to an array so we can sort it
+        // We sort by count (b[1] - a[1]) to get highest first
+        const topMovie = Object.entries(movieCounts)
+            .sort((a, b) => b[1] - a[1])[0];
+
+        // If there are reviews show the top movie, otherwise show "N/A"
+        document.getElementById("topMovie").innerText = topMovie ? topMovie[0] : "N/A";
+
+        // If no reviews show a message
+        if (data.length === 0) {
+            section.innerHTML = "<p>No reviews yet</p>";
+            return;
+        }
+
+        section.innerHTML = ""; // clear before adding reviews
+
+        // Loop through every review and create a card
+        data.forEach(review => {
+            const div = document.createElement("div");
+            div.innerHTML = `
+                <div class="card" style="width: 100%; max-width: 600px; margin-bottom: 15px; text-align: left;">
+                    <p><strong>User:</strong> ${review.user}</p>
+                    <p><strong>Movie ID:</strong> ${review.movie_id}</p>
+                    <p><strong>Review:</strong> ${review.review}</p>
+                    <p><strong>Rating:</strong> ${"⭐".repeat(review.rating || 0)}</p>
+                    <p style="color: #888; font-size: 12px;">${new Date(review.date).toLocaleDateString()}</p>
+                    <!-- Admin can delete ANY review, not just their own -->
+                    <a href="#" style="color: red;" onclick="adminDeleteReview('${review._id}')">🗑️ Delete</a>
+                </div>
+            `;
+            section.appendChild(div);
+        });
+    })
+    .catch(err => console.error("Error loading reviews:", err));
+}
+
+// =====================
+// LOAD TOTAL USERS
+// =====================
+// Fetches total number of registered users
+function loadTotalUsers() {
+    fetch(`${AUTH_API}/users`, {
+        headers: {
+            // Sends token so backend knows this is an admin request
+            "Authorization": `Bearer ${token}`
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        // data.length = how many users are registered
+        document.getElementById("totalUsers").innerText = data.length;
+    })
+    .catch(err => console.error("Error loading users:", err));
+}
+
+// =====================
+// ADMIN DELETE REVIEW
+// =====================
+// Admin can delete ANY review without needing to be the owner
+function adminDeleteReview(reviewId) {
+    // Confirms before deleting so admin doesnt accidentally delete
+    if (!confirm("Are you sure you want to delete this review?")) return;
+
+    fetch(`${REVIEWS_API}/admin/${reviewId}`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            // Sends token so backend can verify this is an admin
+            "Authorization": `Bearer ${token}`
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log("Admin delete response:", data);
+        loadAllReviews(); // refreshes the list after deleting
+    })
+    .catch(err => console.error("Admin delete error:", err));
+}
+
+// =====================
+// INIT - runs when page loads
+// =====================
+loadAllReviews();
+loadTotalUsers();
+</script>
+
+</body>
+</html>

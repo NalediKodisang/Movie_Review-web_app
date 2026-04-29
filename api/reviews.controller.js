@@ -66,4 +66,31 @@ static async apiGetUserReviews(req, res) {
         res.status(500).json({ error: e.message });
     }
 }
+
+// Gets ALL reviews in the database
+// Only admin should be able to call this
+static async apiGetAllReviews(req, res) {
+    try {
+        // Calls getAllReviews from the DAO
+        // Returns every review from every movie
+        const allReviews = await ReviewsDAO.getAllReviews();
+        res.json(allReviews || []);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+}
+
+// Admin delete - can delete ANY review
+// Regular delete only works if you own the review
+static async apiAdminDeleteReview(req, res) {
+    try {
+        const reviewId = req.params.id;
+        // Calls deleteReviewById which doesnt check ownership
+        const response = await ReviewsDAO.deleteReviewById(reviewId);
+        res.json({ success: true, data: response });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+}
+
 }

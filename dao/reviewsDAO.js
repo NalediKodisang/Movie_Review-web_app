@@ -61,4 +61,31 @@ export default class ReviewsDAO {
       throw e;
     }
   }
+
+  // Gets every single review in the database
+// Used for admin dashboard
+static async getAllReviews() {
+    try {
+        // find({}) with empty object = get everything
+        return await reviews.find({}).toArray();
+    } catch (e) {
+        console.error("getAllReviews error:", e);
+        throw e;
+    }
+}
+
+// Deletes a review by ID only - no ownership check
+// Regular deleteReview checks if user owns the review
+// This one is for admin who can delete anything
+static async deleteReviewById(reviewId) {
+    try {
+        return await reviews.deleteOne({
+            _id: new ObjectId(reviewId)
+            // notice no "user" check here - admin can delete any review
+        });
+    } catch (e) {
+        console.error("deleteReviewById error:", e);
+        throw e;
+    }
+}
 }
