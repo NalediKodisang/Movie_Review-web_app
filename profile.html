@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topnav">
+    <a class="active" href="index.html">MOVIE SITE</a>
+    <!-- This div gets filled by JS with username and logout -->
+    <div id="navUser"></div>
+</div>
+
+<div class="auth-container">
+    <div class="auth-box" style="max-width: 600px; width: 100%;">
+        
+        <!-- Profile header - shows the users name -->
+        <h2>👤 My Profile</h2>
+
+        <!-- This gets filled by JS with "@username" -->
+        <p id="profileUsername" style="color: #4da3ff; font-size: 18px;"></p>
+        
+        <hr style="border-color: #2a3a55; margin: 15px 0;">
+
+        <!-- Shows total number of reviews they wrote -->
+        <p id="reviewCount" style="color: white; font-size: 14px;"></p>
+
+        <hr style="border-color: #2a3a55; margin: 15px 0;">
+
+        <!-- This section gets filled by JS with their reviews -->
+        <h3>My Reviews</h3>
+        <section id="userReviews"></section>
+
+    </div>
+</div>
+
+<script>
+// Your backend API on Render
+const REVIEWS_API = "https://movie-review-web-app-1.onrender.com/api/v1/reviews";
+
+// Read token and username that were saved when user logged in
+const token = localStorage.getItem("token");
+const username = localStorage.getItem("username");
+
+// Gets the navUser div in the navbar
+const navUser = document.getElementById("navUser");
+
+// If not logged in - kick them to login page immediately
+// We dont want people viewing profiles without being logged in
+if (!token) {
+    window.location.href = "login.html";
+}
+
+// Fill the navbar with username linking to profile and logout button
+navUser.innerHTML = `
+    <a href="profile.html" style="color:white; padding: 10px;">👤 ${username}</a>
+    <a href="#" onclick="logout()">Logout</a>
+`;
+
+// Show "@username" on the profile page
+document.getElementById("profileUsername").innerText = `@${username}`;
+
+// Clears localStorage and sends user back to login page
+function logout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    window.location.href = "login.html";
+}
+
+// =====================
+// LOAD USER REVIEWS
+// =====================
+function loadUserReviews() {
+    // Calls the backend route GET /api/v1/reviews/user/username
+    // This returns all reviews written by this specific user
+    fetch(`${REVIEWS_API}/user/${username}`)
+        .then(res => res.json()) // converts response to JSON
+        .then(data => {
+            console.log("User reviews:", data);
+
+            // Gets the HTML elements we need to update
+            const section = document.getElementById("userReviews");
+            const countEl = document.getElementById("reviewCount");
+
+            // Shows total number of reviews
+            // data.length = how many reviews are in the array
+            countEl.innerText = `Total reviews written: ${data.length}`;
+
+            // If they havent written any reviews yet show a message
+            if (data.length === 0) {
+                section.innerHTML = "<p>You haven't written any reviews yet!</p>";
+                return; // stop here, nothing more to do
+            }
+
+            section.innerHTML = ""; // clear section before adding reviews
+
+            // Loop through each review and create a card for it
+            data.forEach(review => {
+                const div = document.createElement("div");
+
+                // new Date(review.date).toLocaleDateString() 
+                // converts the date from MongoDB into a readable format
+                // e.g. "4/28/2026"
+                div.innerHTML = `
+                    <div class="card" style="width: 100%; margin-bottom: 15px; text-align: left;">
+                        <p><strong>Movie ID:</strong> ${review.movie_id}</p>
+                        <p><strong>Review:</strong> ${review.review}</p>
+                        <p><strong>Rating:</strong> ${"⭐".repeat(review.rating || 0)}</p>
+                        <p style="color: #888; font-size: 12px;">${new Date(review.date).toLocaleDateString()}</p>
+                    </div>
+                `;
+                section.appendChild(div); // adds the card to the page
+            });
+        })
+        .catch(err => console.error("Error loading user reviews:", err));
+        // catch handles any network errors
+}
+
+// Runs the function when the page first loads
+loadUserReviews();
+</script>
+
+</body>
+</html>

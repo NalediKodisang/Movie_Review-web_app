@@ -50,4 +50,20 @@ export default class ReviewsController {
       res.status(500).json({ error: e.message });
     }
   }
+  
+   // Gets all reviews for a specific user
+// Called when someone visits their profile page
+static async apiGetUserReviews(req, res) {
+    try {
+        const username = req.params.username;
+        console.log("GET reviews for user:", username);
+
+        const userReviews = await ReviewsDAO.getReviewsByUser(username);
+        console.log("Found user reviews:", userReviews);
+
+        res.json(userReviews || []);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+}
 }

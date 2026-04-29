@@ -18,4 +18,9 @@ router.delete("/:id", (req, res) => {
     ReviewsCtrl.apiDeleteReview(req, res);
 });
 
+// GET all reviews by a specific user - for profile page
+router.get("/user/:username", (req, res) => {
+    ReviewsCtrl.apiGetUserReviews(req, res);
+});
+
 export default router;

@@ -50,4 +50,15 @@ export default class ReviewsDAO {
       throw e;
     }
   }
+
+  static async getReviewsByUser(username) {
+    // finds all reviews where the user field matches the
+    // username
+    try {
+      return await reviews.find({ user: username }).toArray();
+    } catch (e) {
+      console.error("getReviewsByUser error:", e);
+      throw e;
+    }
+  }
 }

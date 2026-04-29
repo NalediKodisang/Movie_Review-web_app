@@ -10,18 +10,29 @@
 
 <div class="topnav">
     <a class="active" href="index.html">MOVIE SITE</a>
+    <div id="navUser"></div>
 </div> 
 
-<div class="review-form">
+<!-- Review form - only shown if logged in -->
+<div class="review-form" id="reviewFormSection">
   <h2>Write a Review</h2>
-
-  <input id="user" placeholder="Your name" />
+  
+  <!-- Shows "Reviewing as: username" when logged in -->
+  <p id="loggedInAs" style="color: #4da3ff;"></p>
 
   <textarea id="reviewText" placeholder="Write review"></textarea>
+  <br><br>
 
   <input id="rating" type="number" min="1" max="5" placeholder="Rating (1-5)" />
+  <br><br>
 
   <button onclick="submitReview()">Submit Review</button>
+</div>
+
+<!-- Shown instead if NOT logged in -->
+<div id="loginPrompt" style="display:none">
+  <p>You need to be logged in to write a review.</p>
+  <a href="login.html">Login here</a>
 </div>
 
 <hr>
