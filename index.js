@@ -8,8 +8,7 @@ dotenv.config();
 const MongoClient = mongodb.MongoClient;
 const port = process.env.PORT || 8000;
 
-const uri = `mongodb://${process.env.MONGO_USERNAME}:${encodeURIComponent(process.env.MONGO_PASSWORD)}@ac-zfc4av3-shard-00-00.t1bsyw0.mongodb.net:27017,ac-zfc4av3-shard-00-01.t1bsyw0.mongodb.net:27017,ac-zfc4av3-shard-00-02.t1bsyw0.mongodb.net:27017/?ssl=true&replicaSet=atlas-qe68pp-shard-0&authSource=admin&appName=Cluster0`;
-
+const uri = `mongodb+srv://${process.env.MONGO_USERNAME}:${encodeURIComponent(process.env.MONGO_PASSWORD)}@cluster0.t1bsyw0.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 MongoClient.connect(uri, { maxPoolSize: 50, wtimeoutMS: 2500 })
 .then(async client => {
     await ReviewsDAO.injectDB(client);

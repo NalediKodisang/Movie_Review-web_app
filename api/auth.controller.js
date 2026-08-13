@@ -77,10 +77,13 @@ static async getAllUsers(req, res) {
             username: user.username,
             role: user.role,
             date: user.date
+            //you are slacking!
         }));
         res.json(safeUsers);
     } catch (e) {
         res.status(500).json({ error: e.message });
+
+        
     }
 }
 }
